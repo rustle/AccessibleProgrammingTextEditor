@@ -1,0 +1,356 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		917DAD0220AD317A00554292 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD0120AD317A00554292 /* AppDelegate.swift */; };
+		917DAD0420AD317A00554292 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD0320AD317A00554292 /* Document.swift */; };
+		917DAD0920AD317B00554292 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 917DAD0820AD317B00554292 /* Assets.xcassets */; };
+		917DAD1520AD334500554292 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD1420AD334500554292 /* DocumentController.swift */; };
+		917DAD1720AD337900554292 /* DocumentWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD1620AD337900554292 /* DocumentWindowController.swift */; };
+		917DAD1A20AD344300554292 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 917DAD1820AD344300554292 /* MainMenu.xib */; };
+		917DAD1D20AD357B00554292 /* DocumentWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 917DAD1B20AD357B00554292 /* DocumentWindow.xib */; };
+		917DAD2120AE701700554292 /* LineNumberRulerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD2020AE701700554292 /* LineNumberRulerView.swift */; };
+		91D40B3020B4FA95000DA185 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D40B2F20B4FA95000DA185 /* TextView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		917DACFE20AD317A00554292 /* CodeEdit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeEdit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		917DAD0120AD317A00554292 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		917DAD0320AD317A00554292 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		917DAD0820AD317B00554292 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		917DAD0D20AD317B00554292 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		917DAD0E20AD317B00554292 /* CodeEdit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CodeEdit.entitlements; sourceTree = "<group>"; };
+		917DAD1420AD334500554292 /* DocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
+		917DAD1620AD337900554292 /* DocumentWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentWindowController.swift; sourceTree = "<group>"; };
+		917DAD1920AD344300554292 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		917DAD1C20AD357B00554292 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/DocumentWindow.xib; sourceTree = "<group>"; };
+		917DAD2020AE701700554292 /* LineNumberRulerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineNumberRulerView.swift; sourceTree = "<group>"; };
+		91D40B2F20B4FA95000DA185 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		917DACFB20AD317A00554292 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		917DACF520AD317A00554292 = {
+			isa = PBXGroup;
+			children = (
+				917DAD0020AD317A00554292 /* CodeEdit */,
+				917DACFF20AD317A00554292 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		917DACFF20AD317A00554292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				917DACFE20AD317A00554292 /* CodeEdit.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		917DAD0020AD317A00554292 /* CodeEdit */ = {
+			isa = PBXGroup;
+			children = (
+				917DAD0120AD317A00554292 /* AppDelegate.swift */,
+				917DAD0320AD317A00554292 /* Document.swift */,
+				917DAD1620AD337900554292 /* DocumentWindowController.swift */,
+				917DAD1420AD334500554292 /* DocumentController.swift */,
+				91D40B2F20B4FA95000DA185 /* TextView.swift */,
+				917DAD2020AE701700554292 /* LineNumberRulerView.swift */,
+				917DAD0820AD317B00554292 /* Assets.xcassets */,
+				917DAD1820AD344300554292 /* MainMenu.xib */,
+				917DAD1B20AD357B00554292 /* DocumentWindow.xib */,
+				917DAD0D20AD317B00554292 /* Info.plist */,
+				917DAD0E20AD317B00554292 /* CodeEdit.entitlements */,
+			);
+			path = CodeEdit;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		917DACFD20AD317A00554292 /* CodeEdit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 917DAD1120AD317B00554292 /* Build configuration list for PBXNativeTarget "CodeEdit" */;
+			buildPhases = (
+				917DACFA20AD317A00554292 /* Sources */,
+				917DACFB20AD317A00554292 /* Frameworks */,
+				917DACFC20AD317A00554292 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CodeEdit;
+			productName = CodeEdit;
+			productReference = 917DACFE20AD317A00554292 /* CodeEdit.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		917DACF620AD317A00554292 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+				ORGANIZATIONNAME = "Doug Russell";
+				TargetAttributes = {
+					917DACFD20AD317A00554292 = {
+						CreatedOnToolsVersion = 9.3;
+					};
+				};
+			};
+			buildConfigurationList = 917DACF920AD317A00554292 /* Build configuration list for PBXProject "CodeEdit" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 917DACF520AD317A00554292;
+			productRefGroup = 917DACFF20AD317A00554292 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				917DACFD20AD317A00554292 /* CodeEdit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		917DACFC20AD317A00554292 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				917DAD0920AD317B00554292 /* Assets.xcassets in Resources */,
+				917DAD1A20AD344300554292 /* MainMenu.xib in Resources */,
+				917DAD1D20AD357B00554292 /* DocumentWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		917DACFA20AD317A00554292 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				917DAD2120AE701700554292 /* LineNumberRulerView.swift in Sources */,
+				917DAD1720AD337900554292 /* DocumentWindowController.swift in Sources */,
+				917DAD0420AD317A00554292 /* Document.swift in Sources */,
+				91D40B3020B4FA95000DA185 /* TextView.swift in Sources */,
+				917DAD0220AD317A00554292 /* AppDelegate.swift in Sources */,
+				917DAD1520AD334500554292 /* DocumentController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		917DAD1820AD344300554292 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				917DAD1920AD344300554292 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		917DAD1B20AD357B00554292 /* DocumentWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				917DAD1C20AD357B00554292 /* Base */,
+			);
+			name = DocumentWindow.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		917DAD0F20AD317B00554292 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		917DAD1020AD317B00554292 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		917DAD1220AD317B00554292 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = CodeEdit/CodeEdit.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CodeEdit/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.DetroitBlockWorks.CodeEdit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		917DAD1320AD317B00554292 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = CodeEdit/CodeEdit.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CodeEdit/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.DetroitBlockWorks.CodeEdit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		917DACF920AD317A00554292 /* Build configuration list for PBXProject "CodeEdit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				917DAD0F20AD317B00554292 /* Debug */,
+				917DAD1020AD317B00554292 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		917DAD1120AD317B00554292 /* Build configuration list for PBXNativeTarget "CodeEdit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				917DAD1220AD317B00554292 /* Debug */,
+				917DAD1320AD317B00554292 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 917DACF620AD317A00554292 /* Project object */;
+}

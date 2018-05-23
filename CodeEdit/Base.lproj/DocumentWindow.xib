@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="DocumentWindowController" customModule="CodeEdit" customModuleProvider="target">
+            <connections>
+                <outlet property="scrollView" destination="EQP-pk-BSh" id="oBz-z7-nQA"/>
+                <outlet property="textView" destination="G67-Uu-WJy" id="Vgf-nI-x2G"/>
+                <outlet property="window" destination="Yco-Nc-ypY" id="rGa-tx-hbW"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="Yco-Nc-ypY" userLabel="Window">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="241" y="745" width="494" height="357"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
+            <value key="minSize" type="size" width="100" height="14"/>
+            <view key="contentView" id="RBh-8H-rnK">
+                <rect key="frame" x="0.0" y="0.0" width="494" height="357"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EQP-pk-BSh">
+                        <rect key="frame" x="0.0" y="0.0" width="494" height="357"/>
+                        <clipView key="contentView" id="j06-0K-g6m">
+                            <rect key="frame" x="1" y="1" width="492" height="355"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" textCompletion="NO" id="G67-Uu-WJy" customClass="TextView" customModule="CodeEdit" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="492" height="355"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <size key="minSize" width="492" height="355"/>
+                                    <size key="maxSize" width="494" height="10000000"/>
+                                    <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </textView>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="wCz-Kl-m4b">
+                            <rect key="frame" x="-100" y="-100" width="492" height="16"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="zSh-Pj-qBy">
+                            <rect key="frame" x="477" y="1" width="16" height="355"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="EQP-pk-BSh" firstAttribute="leading" secondItem="RBh-8H-rnK" secondAttribute="leading" id="1rt-jm-tvl"/>
+                    <constraint firstAttribute="trailing" secondItem="EQP-pk-BSh" secondAttribute="trailing" id="2eP-6A-vSt"/>
+                    <constraint firstAttribute="bottom" secondItem="EQP-pk-BSh" secondAttribute="bottom" id="ay2-NW-WWa"/>
+                    <constraint firstItem="EQP-pk-BSh" firstAttribute="top" secondItem="RBh-8H-rnK" secondAttribute="top" id="igP-ML-H2q"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="-188" y="-116"/>
+        </window>
+    </objects>
+</document>
