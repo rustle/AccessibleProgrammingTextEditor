@@ -68,6 +68,12 @@ public class LineNumberRulerView : NSRulerView {
             needsDisplay = true
         }
     }
+    private let formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
+    private let dash = NSLocalizedString("Dash", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
     var lineCount: Int {
         get {
             return _actualLineCount
@@ -85,11 +91,7 @@ public class LineNumberRulerView : NSRulerView {
         NotificationCenter.default.addObserver(self, selector: #selector(lnrv_frameDidChange), name: NSView.frameDidChangeNotification, object: textView)
         NotificationCenter.default.addObserver(self, selector: #selector(lnrv_textDidChange), name: NSText.didChangeNotification, object: textView)
         self.clientView = textView
-        if let font = textView.font {
-            ruleThickness = font.boundingRect(forCGGlyph: 36).width * 3.0
-        } else {
-            ruleThickness = 40.0
-        }
+        ruleThickness = font.boundingRect(forCGGlyph: 36).width * 3.0
     }
     public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -100,73 +102,125 @@ public class LineNumberRulerView : NSRulerView {
     @objc func lnrv_textDidChange(notification: NSNotification) {
         needsDisplay = true
     }
+    private enum Error : Swift.Error {
+        case unsupportedClientView
+        case nilLayoutManager
+    }
+    private enum LineNumber {
+        case line(Int)
+        case continuation(Int, Int)
+    }
+    private func enumerateLines(visible: Bool = true, work: (LineNumber, NSRect) -> Void) throws -> Int {
+        guard let textView = self.clientView as? NSTextView else {
+            throw LineNumberRulerView.Error.unsupportedClientView
+        }
+        guard let layoutManager = textView.layoutManager else {
+            throw LineNumberRulerView.Error.nilLayoutManager
+        }
+        if visible {
+            let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: textView.visibleRect, in: textView.textContainer!)
+            let firstVisibleGlyphCharacterIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
+            let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
+            // The line number for the first visible line
+            var lineNumber = newLineRegex.numberOfMatches(in: textView.string, options: [], range: NSMakeRange(0, firstVisibleGlyphCharacterIndex)) + 1
+            var glyphIndexForStringLine = visibleGlyphRange.location
+            // Go through each line in the string.
+            while glyphIndexForStringLine < NSMaxRange(visibleGlyphRange) {
+                // Range of current line in the string.
+                let characterRangeForStringLine = (textView.string as NSString).lineRange(for: NSMakeRange(layoutManager.characterIndexForGlyph(at: glyphIndexForStringLine), 0))
+                let glyphRangeForStringLine = layoutManager.glyphRange(forCharacterRange: characterRangeForStringLine, actualCharacterRange: nil)
+                var glyphIndexForGlyphLine = glyphIndexForStringLine
+                var glyphLineCount = 0
+                while glyphIndexForGlyphLine < NSMaxRange(glyphRangeForStringLine) {
+                    // See if the current line in the string spread across
+                    // several lines of glyphs
+                    var effectiveRange = NSMakeRange(0, 0)
+                    // Range of current "line of glyphs". If a line is wrapped,
+                    // then it will have more than one "line of glyphs"
+                    let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
+                    if glyphLineCount > 0 {
+                        work(.continuation(lineNumber, glyphLineCount), lineRect)
+                    } else {
+                        work(.line(lineNumber), lineRect)
+                    }
+                    // Move to next glyph line
+                    glyphLineCount += 1
+                    glyphIndexForGlyphLine = NSMaxRange(effectiveRange)
+                }
+                glyphIndexForStringLine = NSMaxRange(glyphRangeForStringLine)
+                lineNumber += 1
+            }
+            // Line number for the extra line at the end of the text
+            if layoutManager.extraLineFragmentTextContainer != nil {
+                work(.line(lineNumber), layoutManager.extraLineFragmentRect)
+            }
+            return lineNumber
+        } else {
+            // The line number for the first visible line
+            var lineNumber = 1
+            var glyphIndexForStringLine = 0
+            let characters = textView.textStorage!.length
+            // Go through each line in the string.
+            while glyphIndexForStringLine < characters {
+                // Range of current line in the string.
+                let characterRangeForStringLine = (textView.string as NSString).lineRange(for: NSMakeRange(layoutManager.characterIndexForGlyph(at: glyphIndexForStringLine), 0))
+                let glyphRangeForStringLine = layoutManager.glyphRange(forCharacterRange: characterRangeForStringLine, actualCharacterRange: nil)
+                var glyphIndexForGlyphLine = glyphIndexForStringLine
+                var glyphLineCount = 0
+                while glyphIndexForGlyphLine < NSMaxRange(glyphRangeForStringLine) {
+                    // See if the current line in the string spread across
+                    // several lines of glyphs
+                    var effectiveRange = NSMakeRange(0, 0)
+                    // Range of current "line of glyphs". If a line is wrapped,
+                    // then it will have more than one "line of glyphs"
+                    let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
+                    if glyphLineCount > 0 {
+                        work(.continuation(lineNumber, glyphLineCount), lineRect)
+                    } else {
+                        work(.line(lineNumber), lineRect)
+                    }
+                    // Move to next glyph line
+                    glyphLineCount += 1
+                    glyphIndexForGlyphLine = NSMaxRange(effectiveRange)
+                }
+                glyphIndexForStringLine = NSMaxRange(glyphRangeForStringLine)
+                lineNumber += 1
+            }
+            // Line number for the extra line at the end of the text
+            if layoutManager.extraLineFragmentTextContainer != nil {
+                work(.line(lineNumber), layoutManager.extraLineFragmentRect)
+            }
+            return lineNumber
+        }
+    }
     public override func drawHashMarksAndLabels(in rect: NSRect) {
         guard let textView = self.clientView as? NSTextView else {
             return
         }
-        guard let layoutManager = textView.layoutManager else {
-            return
-        }
         let relativePoint = self.convert(NSZeroPoint, from: textView)
         let lineNumberAttributes = [NSAttributedStringKey.font: textView.font!, NSAttributedStringKey.foregroundColor: NSColor.gray] as [NSAttributedStringKey : Any]
-        
         let rule = ruleThickness - 5.0
-        let drawLineNumber = { (lineNumberString:String, y:CGFloat) -> Void in
-            let attString = NSAttributedString(string: lineNumberString, attributes: lineNumberAttributes)
-            let x = rule - attString.size().width
-            attString.draw(at: NSPoint(x: x, y: relativePoint.y + y))
-        }
-        
-        let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: textView.visibleRect, in: textView.textContainer!)
-        let firstVisibleGlyphCharacterIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
-        
-        let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
-        // The line number for the first visible line
-        var lineNumber = newLineRegex.numberOfMatches(in: textView.string, options: [], range: NSMakeRange(0, firstVisibleGlyphCharacterIndex)) + 1
-        
-        var glyphIndexForStringLine = visibleGlyphRange.location
-        
-        // Go through each line in the string.
-        while glyphIndexForStringLine < NSMaxRange(visibleGlyphRange) {
-            
-            // Range of current line in the string.
-            let characterRangeForStringLine = (textView.string as NSString).lineRange(for: NSMakeRange(layoutManager.characterIndexForGlyph(at: glyphIndexForStringLine), 0))
-            let glyphRangeForStringLine = layoutManager.glyphRange(forCharacterRange: characterRangeForStringLine, actualCharacterRange: nil)
-            
-            var glyphIndexForGlyphLine = glyphIndexForStringLine
-            var glyphLineCount = 0
-            
-            while glyphIndexForGlyphLine < NSMaxRange(glyphRangeForStringLine) {
-                
-                // See if the current line in the string spread across
-                // several lines of glyphs
-                var effectiveRange = NSMakeRange(0, 0)
-                
-                // Range of current "line of glyphs". If a line is wrapped,
-                // then it will have more than one "line of glyphs"
-                let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
-                
-                if glyphLineCount > 0 {
-                    drawLineNumber("-", lineRect.minY)
-                } else {
-                    drawLineNumber("\(lineNumber)", lineRect.minY)
+        do {
+            _ = try enumerateLines { lineNumber, lineRect in
+                let lineNumberString: String
+                switch lineNumber {
+                case .line(let value):
+                    if let value = formatter.string(from: value as NSNumber) {
+                        lineNumberString = value
+                    } else {
+                        lineNumberString = "\(value)"
+                    }
+                case .continuation(_):
+                    lineNumberString = dash
                 }
-                
-                // Move to next glyph line
-                glyphLineCount += 1
-                glyphIndexForGlyphLine = NSMaxRange(effectiveRange)
+                let y = lineRect.minY
+                let attString = NSAttributedString(string: lineNumberString, attributes: lineNumberAttributes)
+                let x = rule - attString.size().width
+                attString.draw(at: NSPoint(x: x, y: relativePoint.y + y))
             }
+        } catch {
             
-            glyphIndexForStringLine = NSMaxRange(glyphRangeForStringLine)
-            lineNumber += 1
         }
-        
-        // Draw line number for the extra line at the end of the text
-        if layoutManager.extraLineFragmentTextContainer != nil {
-            drawLineNumber("\(lineNumber)", layoutManager.extraLineFragmentRect.minY)
-        }
-        
-        lineCount = lineNumber
         accessibilityChildrenDirty = true
     }
 }
@@ -228,6 +282,8 @@ public class LNRVAccessibilityText : LineNumberAccessibilityElement, NSAccessibi
     public func accessibilityValue() -> String? {
         return text
     }
+    // This has to use the deprecated methods because that's the only way to specify an
+    // action name that is different from the action description
     public override func accessibilityActionNames() -> [NSAccessibilityActionName] {
         return [NSAccessibilityActionName.scrollToVisible]
     }
@@ -263,75 +319,58 @@ public extension LineNumberRulerView {
         return .list
     }
     public override func accessibilityRoleDescription() -> String? {
-        return "ruler"
+        return NSLocalizedString("AccessibilityRoleDescription", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
     }
     public override func accessibilityLabel() -> String? {
-        return "Line Number"
+        return NSLocalizedString("AccessibilityLabel", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
     }
     // TODO: Build accessibility children incrementally
     private func updateAccessibilityChildren() {
-        _actualAccessibilityChildren = []
-        guard let textView = self.clientView as? NSTextView else {
-            return
-        }
-        guard let layoutManager = textView.layoutManager else {
-            return
-        }
         var reuseQueue = _actualAccessibilityChildren
-        var accessibilityChildren = [LNRVAccessibilityText]()
-        accessibilityChildren.reserveCapacity(reuseQueue.capacity)
-        let rule = ruleThickness
-        let addLineNumberElement = { (lineNumberString: String, lineRect: CGRect) -> Void in
-            var elementRect = lineRect
-            elementRect.size.width = rule
+        _actualAccessibilityChildren = []
+        let lineNumberFormat = NSLocalizedString("AccessibilityLineFormatterWithPrefix", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
+        let lineNumberContinuationFormat = NSLocalizedString("AccessibilityLineContinuationFormatterWithPrefix", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
+        func dequeue(frame: NSRect, parent: AnyObject) -> LNRVAccessibilityText {
             let text: LNRVAccessibilityText
             if reuseQueue.count > 0 {
                 text = reuseQueue.removeLast()
-                text.parent = self
-                text.frame = elementRect
+                text.parent = parent
+                text.frame = frame
             } else {
-                text = LNRVAccessibilityText(frame: elementRect, parent: self)
+                text = LNRVAccessibilityText(frame: frame, parent: parent)
             }
-            text.index = accessibilityChildren.count
-            text.text = lineNumberString
-            accessibilityChildren.append(text)
+            return text
         }
-        // The line number for the first visible line
-        var lineNumber = 1
-        var glyphIndexForStringLine = 0
-        let characters = textView.textStorage!.length
-        // Go through each line in the string.
-        while glyphIndexForStringLine < characters {
-            // Range of current line in the string.
-            let characterRangeForStringLine = (textView.string as NSString).lineRange(for: NSMakeRange(layoutManager.characterIndexForGlyph(at: glyphIndexForStringLine), 0))
-            let glyphRangeForStringLine = layoutManager.glyphRange(forCharacterRange: characterRangeForStringLine, actualCharacterRange: nil)
-            var glyphIndexForGlyphLine = glyphIndexForStringLine
-            var glyphLineCount = 0
-            while glyphIndexForGlyphLine < NSMaxRange(glyphRangeForStringLine) {
-                // See if the current line in the string spread across
-                // several lines of glyphs
-                var effectiveRange = NSMakeRange(0, 0)
-                
-                // Range of current "line of glyphs". If a line is wrapped,
-                // then it will have more than one "line of glyphs"
-                let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
-                
-                if glyphLineCount > 0 {
-                    addLineNumberElement("Line \(lineNumber) continued", lineRect)
-                } else {
-                    addLineNumberElement("Line \(lineNumber)", lineRect)
+        func numberString(_ value: Int) -> String {
+            guard let numberString = formatter.string(from: value as NSNumber) else {
+                return "\(value)"
+            }
+            return numberString
+        }
+        do {
+            var accessibilityChildren = [LNRVAccessibilityText]()
+            accessibilityChildren.reserveCapacity(reuseQueue.capacity)
+            let rule = ruleThickness
+            lineCount = try enumerateLines { lineNumber, lineRect in
+                var elementRect = lineRect
+                elementRect.size.width = rule
+                let text = dequeue(frame: elementRect, parent: self)
+                text.index = accessibilityChildren.count
+                let lineNumberString: String
+                switch lineNumber {
+                case .line(let value):
+                    lineNumberString = String(format: lineNumberFormat, numberString(value))
+                case .continuation(let lineNumber, let continuations):
+                    lineNumberString = String(format: lineNumberContinuationFormat, numberString(lineNumber), numberString(continuations + 1))
                 }
-                
-                // Move to next glyph line
-                glyphLineCount += 1
-                glyphIndexForGlyphLine = NSMaxRange(effectiveRange)
+                text.text = lineNumberString
+                accessibilityChildren.append(text)
             }
-            glyphIndexForStringLine = NSMaxRange(glyphRangeForStringLine)
-            lineNumber += 1
+            _actualAccessibilityChildren = accessibilityChildren
+            accessibilityChildrenDirty = false
+        } catch {
+            
         }
-        addLineNumberElement("Line \(lineNumber)", layoutManager.extraLineFragmentRect)
-        _actualAccessibilityChildren = accessibilityChildren
-        accessibilityChildrenDirty = false
     }
     public override func accessibilityChildren() -> [Any]? {
         if accessibilityChildrenDirty {

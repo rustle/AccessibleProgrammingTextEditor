@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9100B59B20B4FE2600AE90E1 /* LineNumberRulerView.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9100B59A20B4FE2600AE90E1 /* LineNumberRulerView.strings */; };
 		917DAD0220AD317A00554292 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD0120AD317A00554292 /* AppDelegate.swift */; };
 		917DAD0420AD317A00554292 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DAD0320AD317A00554292 /* Document.swift */; };
 		917DAD0920AD317B00554292 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 917DAD0820AD317B00554292 /* Assets.xcassets */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9100B59A20B4FE2600AE90E1 /* LineNumberRulerView.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = LineNumberRulerView.strings; sourceTree = "<group>"; };
 		917DACFE20AD317A00554292 /* CodeEdit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeEdit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		917DAD0120AD317A00554292 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		917DAD0320AD317A00554292 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				917DAD1420AD334500554292 /* DocumentController.swift */,
 				91D40B2F20B4FA95000DA185 /* TextView.swift */,
 				917DAD2020AE701700554292 /* LineNumberRulerView.swift */,
+				9100B59A20B4FE2600AE90E1 /* LineNumberRulerView.strings */,
 				917DAD0820AD317B00554292 /* Assets.xcassets */,
 				917DAD1820AD344300554292 /* MainMenu.xib */,
 				917DAD1B20AD357B00554292 /* DocumentWindow.xib */,
@@ -137,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				917DAD0920AD317B00554292 /* Assets.xcassets in Resources */,
+				9100B59B20B4FE2600AE90E1 /* LineNumberRulerView.strings in Resources */,
 				917DAD1A20AD344300554292 /* MainMenu.xib in Resources */,
 				917DAD1D20AD357B00554292 /* DocumentWindow.xib in Resources */,
 			);
