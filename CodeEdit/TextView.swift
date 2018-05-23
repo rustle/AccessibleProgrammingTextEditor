@@ -9,5 +9,5 @@
 import Cocoa
 
 class TextView : NSTextView, LineNumberTextView {
-    var lineNumberView: LineNumberRulerView?
+    var lineNumberRulerView: LineNumberRulerView?
 }

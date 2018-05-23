@@ -27,19 +27,16 @@
 import Cocoa
 
 public protocol LineNumberTextView : class {
-    var lineNumberView: LineNumberRulerView? { get set }
+    var lineNumberRulerView: LineNumberRulerView? { get set }
 }
 
-public extension LineNumberTextView {
+public extension LineNumberTextView where Self : NSTextView {
     public func setUpLineNumberRulerView() {
-        guard let textView = self as? NSTextView else {
+        guard let scrollView = enclosingScrollView else {
             return
         }
-        guard let scrollView = textView.enclosingScrollView else {
-            return
-        }
-        lineNumberView = LineNumberRulerView(textView: textView)
-        scrollView.verticalRulerView = lineNumberView
+        lineNumberRulerView = LineNumberRulerView(textView: self)
+        scrollView.verticalRulerView = lineNumberRulerView
         scrollView.hasVerticalRuler = true
         scrollView.rulersVisible = true
     }
@@ -47,7 +44,7 @@ public extension LineNumberTextView {
 
 fileprivate extension Int {
     func lnrv_numberOfDigits() -> Int {
-        if (self == 0) {
+        if self == 0 {
             return 0;
         }
         return 1 + (self / 10).lnrv_numberOfDigits()
