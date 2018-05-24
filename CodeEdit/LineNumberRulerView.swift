@@ -26,6 +26,7 @@
 
 import Cocoa
 
+let UseScannerForLineCount = true
 let SupportVisibleChildren = false
 
 public protocol LineNumberTextView : class {
@@ -116,6 +117,42 @@ public class LineNumberRulerView : NSRulerView {
         case visible
         case hidden
     }
+    private func countLinesUpTo(string: String, index: Int) -> Int {
+#if UseScannerForLineCount
+        if index == 0 {
+            return 1
+        }
+        var lineCount = 1
+        let scanner = Scanner(string: string)
+        scanner.charactersToBeSkipped = CharacterSet()
+        let newLines = CharacterSet.newlines
+        while !scanner.isAtEnd && scanner.scanLocation <= index {
+            // scan til we find a newline
+            if scanner.scanUpToCharacters(from: newLines, into: nil) {
+                lineCount += 1
+                continue
+            }
+            // Found a run of new lines
+            var string: NSString?
+            if scanner.scanCharacters(from: newLines, into: &string) {
+                let count = string!.length
+                // If the run passes the index, only count the new lines between the previous
+                // scan location and index
+                if scanner.scanLocation > index {
+                    lineCount += (index - (scanner.scanLocation - count))
+                } else {
+                    lineCount += count
+                }
+                continue
+            }
+            break
+        }
+        return lineCount
+#else
+        let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
+        return newLineRegex.numberOfMatches(in: string, options: [], range: NSMakeRange(0, index)) + 1
+#endif
+    }
     private func enumerateLines(visible: Bool = true, work: (LineNumber, LineVisibility, NSRect) -> Void) throws -> Int {
         guard let textView = self.clientView as? NSTextView else {
             throw LineNumberRulerView.Error.unsupportedClientView
@@ -125,9 +162,7 @@ public class LineNumberRulerView : NSRulerView {
         }
         let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: textView.visibleRect, in: textView.textContainer!)
         let firstVisibleGlyphCharacterIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
-        // TODO: Replace this with a string scanner + new line character set
-        let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
-        let firstVisibleLineNumber = newLineRegex.numberOfMatches(in: textView.string, options: [], range: NSMakeRange(0, firstVisibleGlyphCharacterIndex)) + 1
+        let firstVisibleLineNumber = countLinesUpTo(string: textView.string, index: firstVisibleGlyphCharacterIndex)
         if visible {
             var lineNumber = firstVisibleLineNumber
             var glyphIndexForStringLine = visibleGlyphRange.location
