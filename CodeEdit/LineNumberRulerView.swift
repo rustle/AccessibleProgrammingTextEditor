@@ -58,10 +58,11 @@ public class LineNumberRulerView : NSRulerView {
         }
     }
     fileprivate var accessibilityChildrenDirty = true
-    private var _actualAccessibilityChildren = [LNRVAccessibilityText]()
-    private var _actualLineCount: Int = 0 {
+    private var _accessibilityChildren = [LNRVAccessibilityText]()
+    private var _accessibilityVisibleChildren = [LNRVAccessibilityText]()
+    private var _lineCount: Int = 0 {
         didSet {
-            ruleThickness = font.boundingRect(forCGGlyph: 36).width * CGFloat(_actualLineCount.lnrv_numberOfDigits() + 1)
+            ruleThickness = font.boundingRect(forCGGlyph: 36).width * CGFloat(_lineCount.lnrv_numberOfDigits() + 1)
             needsDisplay = true
         }
     }
@@ -73,11 +74,11 @@ public class LineNumberRulerView : NSRulerView {
     private let dash = NSLocalizedString("Dash", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
     var lineCount: Int {
         get {
-            return _actualLineCount
+            return _lineCount
         }
         set {
-            if newValue != _actualLineCount {
-                _actualLineCount = newValue
+            if newValue != _lineCount {
+                _lineCount = newValue
             }
         }
     }
@@ -107,19 +108,24 @@ public class LineNumberRulerView : NSRulerView {
         case line(Int)
         case continuation(Int, Int)
     }
-    private func enumerateLines(visible: Bool = true, work: (LineNumber, NSRect) -> Void) throws -> Int {
+    private enum LineVisibility {
+        case visible
+        case hidden
+    }
+    private func enumerateLines(visible: Bool = true, work: (LineNumber, LineVisibility, NSRect) -> Void) throws -> Int {
         guard let textView = self.clientView as? NSTextView else {
             throw LineNumberRulerView.Error.unsupportedClientView
         }
         guard let layoutManager = textView.layoutManager else {
             throw LineNumberRulerView.Error.nilLayoutManager
         }
+        let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: textView.visibleRect, in: textView.textContainer!)
+        let firstVisibleGlyphCharacterIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
+        // TODO: Replace this with a string scanner + new line character set
+        let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
+        let firstVisibleLineNumber = newLineRegex.numberOfMatches(in: textView.string, options: [], range: NSMakeRange(0, firstVisibleGlyphCharacterIndex)) + 1
         if visible {
-            let visibleGlyphRange = layoutManager.glyphRange(forBoundingRect: textView.visibleRect, in: textView.textContainer!)
-            let firstVisibleGlyphCharacterIndex = layoutManager.characterIndexForGlyph(at: visibleGlyphRange.location)
-            let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
-            // The line number for the first visible line
-            var lineNumber = newLineRegex.numberOfMatches(in: textView.string, options: [], range: NSMakeRange(0, firstVisibleGlyphCharacterIndex)) + 1
+            var lineNumber = firstVisibleLineNumber
             var glyphIndexForStringLine = visibleGlyphRange.location
             // Go through each line in the string.
             while glyphIndexForStringLine < NSMaxRange(visibleGlyphRange) {
@@ -136,9 +142,9 @@ public class LineNumberRulerView : NSRulerView {
                     // then it will have more than one "line of glyphs"
                     let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
                     if glyphLineCount > 0 {
-                        work(.continuation(lineNumber, glyphLineCount), lineRect)
+                        work(.continuation(lineNumber, glyphLineCount), .visible, lineRect)
                     } else {
-                        work(.line(lineNumber), lineRect)
+                        work(.line(lineNumber), .visible, lineRect)
                     }
                     // Move to next glyph line
                     glyphLineCount += 1
@@ -149,11 +155,10 @@ public class LineNumberRulerView : NSRulerView {
             }
             // Line number for the extra line at the end of the text
             if layoutManager.extraLineFragmentTextContainer != nil {
-                work(.line(lineNumber), layoutManager.extraLineFragmentRect)
+                work(.line(lineNumber), .visible, layoutManager.extraLineFragmentRect)
             }
             return lineNumber
         } else {
-            // The line number for the first visible line
             var lineNumber = 1
             var glyphIndexForStringLine = 0
             let characters = textView.textStorage!.length
@@ -172,9 +177,9 @@ public class LineNumberRulerView : NSRulerView {
                     // then it will have more than one "line of glyphs"
                     let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIndexForGlyphLine, effectiveRange: &effectiveRange, withoutAdditionalLayout: true)
                     if glyphLineCount > 0 {
-                        work(.continuation(lineNumber, glyphLineCount), lineRect)
+                        work(.continuation(lineNumber, glyphLineCount), .visible, lineRect)
                     } else {
-                        work(.line(lineNumber), lineRect)
+                        work(.line(lineNumber), .visible, lineRect)
                     }
                     // Move to next glyph line
                     glyphLineCount += 1
@@ -185,7 +190,7 @@ public class LineNumberRulerView : NSRulerView {
             }
             // Line number for the extra line at the end of the text
             if layoutManager.extraLineFragmentTextContainer != nil {
-                work(.line(lineNumber), layoutManager.extraLineFragmentRect)
+                work(.line(lineNumber), .visible, layoutManager.extraLineFragmentRect)
             }
             return lineNumber
         }
@@ -198,7 +203,7 @@ public class LineNumberRulerView : NSRulerView {
         let lineNumberAttributes = [NSAttributedStringKey.font: textView.font!, NSAttributedStringKey.foregroundColor: NSColor.gray] as [NSAttributedStringKey : Any]
         let rule = ruleThickness - 5.0
         do {
-            _ = try enumerateLines { lineNumber, lineRect in
+            _ = try enumerateLines { lineNumber, _, lineRect in
                 let lineNumberString: String
                 switch lineNumber {
                 case .line(let value):
@@ -308,6 +313,18 @@ public class LNRVAccessibilityText : LineNumberAccessibilityElement, NSAccessibi
     }
 }
 
+fileprivate extension Array {
+    func lnrv_slice(index: Int, maxCount: Int) -> Array<Element> {
+        let count: Int
+        if index + maxCount > self.count {
+            count = self.count
+        } else {
+            count = index + maxCount
+        }
+        return Array(self[index..<count])
+    }
+}
+
 public extension LineNumberRulerView {
     public override func isAccessibilityElement() -> Bool {
         return true
@@ -323,8 +340,9 @@ public extension LineNumberRulerView {
     }
     // TODO: Build accessibility children incrementally
     private func updateAccessibilityChildren() {
-        var reuseQueue = _actualAccessibilityChildren
-        _actualAccessibilityChildren = []
+        var reuseQueue = _accessibilityChildren
+        _accessibilityChildren.removeAll()
+        _accessibilityVisibleChildren.removeAll()
         let lineNumberFormat = NSLocalizedString("AccessibilityLineFormatterWithPrefix", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
         let lineNumberContinuationFormat = NSLocalizedString("AccessibilityLineContinuationFormatterWithPrefix", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
         func dequeue(frame: NSRect, parent: AnyObject) -> LNRVAccessibilityText {
@@ -346,9 +364,10 @@ public extension LineNumberRulerView {
         }
         do {
             var accessibilityChildren = [LNRVAccessibilityText]()
+            var accessibilityVisibleChildren = [LNRVAccessibilityText]()
             accessibilityChildren.reserveCapacity(reuseQueue.capacity)
             let rule = ruleThickness
-            lineCount = try enumerateLines { lineNumber, lineRect in
+            lineCount = try enumerateLines { lineNumber, visibility, lineRect in
                 var elementRect = lineRect
                 elementRect.size.width = rule
                 let text = dequeue(frame: elementRect, parent: self)
@@ -361,9 +380,16 @@ public extension LineNumberRulerView {
                     lineNumberString = String(format: lineNumberContinuationFormat, numberString(lineNumber), numberString(continuations + 1))
                 }
                 text.text = lineNumberString
+                switch visibility {
+                case .visible:
+                    accessibilityVisibleChildren.append(text)
+                case .hidden:
+                    break
+                }
                 accessibilityChildren.append(text)
             }
-            _actualAccessibilityChildren = accessibilityChildren
+            _accessibilityChildren.append(contentsOf: accessibilityChildren)
+            _accessibilityVisibleChildren.append(contentsOf: accessibilityVisibleChildren)
             accessibilityChildrenDirty = false
         } catch {
             
@@ -373,7 +399,13 @@ public extension LineNumberRulerView {
         if accessibilityChildrenDirty {
             updateAccessibilityChildren()
         }
-        return _actualAccessibilityChildren
+        return _accessibilityChildren
+    }
+    public override func accessibilityVisibleChildren() -> [Any]? {
+        if accessibilityChildrenDirty {
+            updateAccessibilityChildren()
+        }
+        return _accessibilityVisibleChildren
     }
     public override func accessibilityIndex(ofChild child: Any) -> Int {
         if accessibilityChildrenDirty {
@@ -382,7 +414,7 @@ public extension LineNumberRulerView {
         guard let element = child as? LNRVAccessibilityText else {
             return NSNotFound
         }
-        guard let index =  _actualAccessibilityChildren.index(of: element) else {
+        guard let index =  _accessibilityChildren.index(of: element) else {
             return NSNotFound
         }
         return index
@@ -393,11 +425,12 @@ public extension LineNumberRulerView {
         }
         switch attribute {
         case .children:
-            break
+            return _accessibilityChildren.count
+        case .visibleChildren:
+            return _accessibilityVisibleChildren.count
         default:
             return 0
         }
-        return _actualAccessibilityChildren.count
     }
     public override func accessibilityArrayAttributeValues(_ attribute: NSAccessibilityAttributeName, index: Int, maxCount: Int) -> [Any] {
         if accessibilityChildrenDirty {
@@ -405,17 +438,12 @@ public extension LineNumberRulerView {
         }
         switch attribute {
         case .children:
-            break
+            return _accessibilityChildren.lnrv_slice(index: index, maxCount: maxCount)
+        case .visibleChildren:
+            return _accessibilityVisibleChildren.lnrv_slice(index: index, maxCount: maxCount)
         default:
             return []
         }
-        let count: Int
-        if index + maxCount > _actualAccessibilityChildren.count {
-            count = _actualAccessibilityChildren.count
-        } else {
-            count = index + maxCount
-        }
-        return Array(_actualAccessibilityChildren[index..<count])
     }
     public override func accessibilityHitTest(_ point: NSPoint) -> Any? {
         guard let children = accessibilityChildren() as? [NSAccessibilityElementProtocol] else {
