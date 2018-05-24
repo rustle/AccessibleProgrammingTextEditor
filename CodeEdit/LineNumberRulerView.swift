@@ -26,6 +26,8 @@
 
 import Cocoa
 
+let SupportVisibleChildren = false
+
 public protocol LineNumberTextView : class {
     var lineNumberRulerView: LineNumberRulerView? { get set }
 }
@@ -59,7 +61,9 @@ public class LineNumberRulerView : NSRulerView {
     }
     fileprivate var accessibilityChildrenDirty = true
     private var _accessibilityChildren = [LNRVAccessibilityText]()
+#if SupportVisibleChildren
     private var _accessibilityVisibleChildren = [LNRVAccessibilityText]()
+#endif
     private var _lineCount: Int = 0 {
         didSet {
             ruleThickness = font.boundingRect(forCGGlyph: 36).width * CGFloat(_lineCount.lnrv_numberOfDigits() + 1)
@@ -342,7 +346,9 @@ public extension LineNumberRulerView {
     private func updateAccessibilityChildren() {
         var reuseQueue = _accessibilityChildren
         _accessibilityChildren.removeAll()
+#if SupportVisibleChildren
         _accessibilityVisibleChildren.removeAll()
+#endif
         let lineNumberFormat = NSLocalizedString("AccessibilityLineFormatterWithPrefix", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
         let lineNumberContinuationFormat = NSLocalizedString("AccessibilityLineContinuationFormatterWithPrefix", tableName: "LineNumberRulerView", bundle: Bundle.main, value: "ERROR", comment: "")
         func dequeue(frame: NSRect, parent: AnyObject) -> LNRVAccessibilityText {
@@ -364,7 +370,9 @@ public extension LineNumberRulerView {
         }
         do {
             var accessibilityChildren = [LNRVAccessibilityText]()
+#if SupportVisibleChildren
             var accessibilityVisibleChildren = [LNRVAccessibilityText]()
+#endif
             accessibilityChildren.reserveCapacity(reuseQueue.capacity)
             let rule = ruleThickness
             lineCount = try enumerateLines { lineNumber, visibility, lineRect in
@@ -382,14 +390,20 @@ public extension LineNumberRulerView {
                 text.text = lineNumberString
                 switch visibility {
                 case .visible:
+#if SupportVisibleChildren
                     accessibilityVisibleChildren.append(text)
+#else
+                    break
+#endif
                 case .hidden:
                     break
                 }
                 accessibilityChildren.append(text)
             }
             _accessibilityChildren.append(contentsOf: accessibilityChildren)
+#if SupportVisibleChildren
             _accessibilityVisibleChildren.append(contentsOf: accessibilityVisibleChildren)
+#endif
             accessibilityChildrenDirty = false
         } catch {
             
@@ -401,12 +415,14 @@ public extension LineNumberRulerView {
         }
         return _accessibilityChildren
     }
+#if SupportVisibleChildren
     public override func accessibilityVisibleChildren() -> [Any]? {
         if accessibilityChildrenDirty {
             updateAccessibilityChildren()
         }
         return _accessibilityVisibleChildren
     }
+#endif
     public override func accessibilityIndex(ofChild child: Any) -> Int {
         if accessibilityChildrenDirty {
             updateAccessibilityChildren()
@@ -426,8 +442,10 @@ public extension LineNumberRulerView {
         switch attribute {
         case .children:
             return _accessibilityChildren.count
+#if SupportVisibleChildren
         case .visibleChildren:
             return _accessibilityVisibleChildren.count
+#endif
         default:
             return 0
         }
@@ -439,8 +457,10 @@ public extension LineNumberRulerView {
         switch attribute {
         case .children:
             return _accessibilityChildren.lnrv_slice(index: index, maxCount: maxCount)
+#if SupportVisibleChildren
         case .visibleChildren:
             return _accessibilityVisibleChildren.lnrv_slice(index: index, maxCount: maxCount)
+#endif
         default:
             return []
         }
