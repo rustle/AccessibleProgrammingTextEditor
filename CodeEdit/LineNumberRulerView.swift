@@ -87,17 +87,26 @@ public class LineNumberRulerView : NSRulerView {
             }
         }
     }
-    public init(textView: NSTextView) {
-        font = textView.font ?? NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
-        super.init(scrollView: textView.enclosingScrollView!, orientation: NSRulerView.Orientation.verticalRuler)
+    public func common(textView: NSTextView) {
         textView.postsFrameChangedNotifications = true
         NotificationCenter.default.addObserver(self, selector: #selector(lnrv_frameDidChange), name: NSView.frameDidChangeNotification, object: textView)
         NotificationCenter.default.addObserver(self, selector: #selector(lnrv_textDidChange), name: NSText.didChangeNotification, object: textView)
-        self.clientView = textView
         ruleThickness = font.boundingRect(forCGGlyph: 36).width * 3.0
     }
+    public init(textView: NSTextView) {
+        font = textView.font ?? NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+        super.init(scrollView: textView.enclosingScrollView!, orientation: NSRulerView.Orientation.verticalRuler)
+        self.clientView = textView
+        common(textView: textView)
+    }
     public required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+        super.init(coder: coder)
+        guard let textView = self.clientView as? NSTextView else {
+            fatalError()
+        }
+        font = textView.font ?? NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+        common(textView: textView)
     }
     @objc func lnrv_frameDidChange(notification: NSNotification) {
         needsDisplay = true
